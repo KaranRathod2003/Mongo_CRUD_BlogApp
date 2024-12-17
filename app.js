@@ -112,6 +112,8 @@ app.get('/like/:id', isLoggedIn, async (req, res)=>{
     res.redirect('/profile'); 
 })
 
+
+
 //update post here
 app.get('/edit/:id', isLoggedIn, async (req, res)=>{
     let user = await userModel.findOne({email: req.user.email}).populate('posts');
@@ -125,6 +127,15 @@ app.post('/update/:id', isLoggedIn, async (req, res)=>{
     res.redirect('/profile');
 })
 
+
+// delete post here
+app.get('/delete/:id', isLoggedIn, async(req, res)=>{
+    let post = await postModel.findOneAndDelete({_id:req.params.id});
+    let user = await userModel.findOne({email: req.user.email});
+    user.posts.splice(user.posts.indexOf(req.params.id), 1);
+    await user.save();
+    res.redirect('/profile');
+})
 
 
 app.listen(3000, ()=>{
